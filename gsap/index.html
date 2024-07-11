@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="hotcss" content="initial-dpr=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta http-equiv="x-ua-compatible" content="IE=edge, chrome=1">
+		<meta name="renderer" content="webkit">
+		<title>gsap</title>
+		<script src="jquery.min.js"></script>
+	</head>
+	<body>
+     <style>
+      .green{
+        width: 50px;
+        height: 50px;
+        background: greenyellow;
+        border-radius: 10px;
+        margin: 10vh 0;
+      }
+    </style>
+    <div class="green"></div>
+
+    <style>
+      .red{
+        width: 50px;
+        height: 50px;
+        background: red;
+        border-radius: 10px;
+      }
+    </style>
+    <div style="margin: 0 10vh;">
+      <div class="red"></div>
+      <button id="restart">开始</button>
+      <button id="invalidate">加一并开始</button>
+    </div>
+
+    <div class="aa" style="font-size: 38px;color: #000;"></div>
+    <div class="bb" style="font-size: 38px;color: #000;">This is a from tween</div>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .gray {
+        position: relative;
+        background: #222;
+        width: 100%;
+        height: 100vh;
+      }
+
+      .mobile, .desktop {
+        width: 200px;
+        height: 100px;
+        border-radius: 5px;
+        background: red;
+        position: absolute;
+        z-index: 0;
+        left: 30%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: 400;
+        line-height: 100px;
+        color: white;
+      }
+
+      .desktop {
+        left: 70%;
+        background: red;
+      }
+    </style>
+    <section class="gray">
+      <div class="mobile">Mobile</div>
+      <div class="desktop">Desktop</div>
+    </section>
+
+    <style>
+      .flair-box{
+        height: 100vh;
+        width: 100%;
+        background: #222;
+        overflow: hidden;
+      }
+      .flair {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: red;
+      }
+    </style>
+    <div class="flair-box">
+      <div class="flair"></div>
+    </div>
+
+    <style>
+      .k{
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+
+    <div class="k">
+      <img id="k1-img" style="width: 100%;height: 100vh;object-fit: cover;display: block;" src="https://tulashi2023.oss-cn-shenzhen.aliyuncs.com/images/xg2/img%20(8).webp">
+    </div>
+
+    <style>
+      .k2 canvas{
+        width: 100%;
+        height: 100vh;
+        object-fit: cover;
+        display: block;
+      }
+    </style>
+    <div class="k2" id="canvas">
+      <video style="display: none;" id="video" src="https://tulashi2023.oss-cn-shenzhen.aliyuncs.com/video/C3%E7%89%87%E6%AE%B5-%E5%87%BA%E9%A3%8E1.mp4"></video>
+    </div>
+  </body>
+  <script src="gsap-latest-beta.min.js"></script>
+  <script src="ScrollTrigger.min.js"></script>
+  
+  <script>
+    gsap.to(".green", {rotation: 720, x: 1000, duration: 3});
+  </script>
+  
+  <script>
+    var t = gsap.to(".red", {duration: 1, x: "+=100"});
+
+    document.querySelector("#restart").addEventListener("click", function() {
+      t.restart();
+    });
+
+    document.querySelector("#invalidate").addEventListener("click", function() {
+      t.invalidate();
+      t.restart();
+    });
+  </script>
+  
+  <script src="TextPlugin.min.js"></script>
+  <script>
+    gsap.to(".aa", {duration: 3, text: "this is a to tween"})
+    gsap.from(".bb", {duration: 3, text: ""})
+  </script>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);//这行代码将ScrollTrigger插件注册到GSAP中，以便能够在后面的代码中使用它。
+
+    let mm = gsap.matchMedia(),//创建一个matchMedia对象，它允许你查询媒体查询的条件，例如屏幕宽度。
+    breakPoint = 1000;//定义一个断点，即屏幕宽度为1000像素，用于判断设备是桌面还是移动设备。
+
+    mm.add({//使用matchMedia对象的add方法来添加两个媒体查询条件，并定义一个回调函数来处理这些条件。
+      isDesktop: `(min-width: ${breakPoint}px) and (prefers-reduced-motion: no-preference)`,//isDesktop`的条件，用于检测屏幕宽度是否大于或等于1000像素，并且用户不偏好减少动画效果。
+      isMobile: `(max-width: ${breakPoint - 1}px) and (prefers-reduced-motion: no-preference)`//isMobile`的条件，用于检测屏幕宽度是否小于999像素，并且用户不偏好减少动画效果。
+    }, (context) => {
+      let { isDesktop, isMobile } = context.conditions,//从回调函数的上下文中解构出isDesktop和isMobile变量。
+          target = isDesktop ? ".desktop" : ".mobile",
+          tl = gsap.timeline({//创建一个GSAP时间线，并传入ScrollTrigger选项来定义动画触发条件。
+            scrollTrigger: {
+              trigger: ".gray",//这指定了当滚动到类为.gray的元素时，应该触发动画。
+              scrub: 1,//这是与滚动位置的关联值。在这里，当滚动位置（或滚动距离）为1时，会触发动画。
+              end: "200%",//这指定了动画应该在滚动位置的200%时结束。也就是说，当用户滚动到页面顶部或底部后，动画将继续执行直到完成。
+              pin: true//这表示当滚动到触发元素时，该元素会被固定在视口中，直到动画结束。
+            }
+          });
+      tl.to(target, {scale: 2, rotation: 360})
+        .to(target, {scale: 1});
+
+      gsap.to(target, {backgroundColor: "#02ff00", duration: 0.8, ease: "none", repeat: -1, yoyo: true});//在元素上执行一个动画，将其背景颜色更改为"#02ff00"，持续时间为0.8秒，不使用缓动函数，无限重复，并设置yoyo属性为true。
+      //如果yoyo属性被设置为true，那么动画将从结束点返回到开始点，然后再从开始点播放到结束点。这意味着动画将无限重复，并且在每次重复时都会反向播放。如果yoyo属性被设置为false，那么动画将从开始点播放到结束点，然后停止。
+
+      return () => { //返回一个空函数，这意味着当媒体查询的条件不再满足时，这个函数将被调用。在这个例子中，它什么也不做。
+      }
+    });
+  </script>
+
+  <script>
+    gsap.set(".flair", {xPercent: -50, yPercent: -50});
+
+    let xTo = gsap.quickTo(".flair", "x", {duration: 0.6, ease: "power3"}),
+        yTo = gsap.quickTo(".flair", "y", {duration: 0.6, ease: "power3"});
+
+    $('.flair').hide();  
+
+    $('.flair-box').on({  
+      mousemove: (e) => {  
+        xTo(e.clientX);  
+        yTo(e.clientY);  
+        $('.flair').show();  
+      },  
+      mouseout: () => {  
+        $('.flair').hide();  
+      }  
+    });
+  </script>
+
+  <script>
+    function load_image(url, callback) {
+      var img = new Image(); 
+      img.src = url; 
+      
+      if(img.complete) { 
+        callback.call(img); 
+        return;
+      } 
+      img.onload = function () {
+        callback.call(img);
+      };
+    };
+
+    var nxImages = [];
+    // for(var int_i=1;int_i<148;int_i++){
+    //   nxImages.push('https://www.apple.com/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/01-hero-lightpass/'+int_i.toString().padStart(4, '0')+'.jpg');
+    //   for(let i in nxImages){
+    //     load_image(nxImages[i],()=>{})
+    //   }
+    // }
+    for(var int_i=8;int_i<164;int_i++){
+      nxImages.push('https://tulashi2023.oss-cn-shenzhen.aliyuncs.com/images/xg2/img%20('+ int_i +').webp');
+      for(let i in nxImages){
+        load_image(nxImages[i],()=>{})
+      }
+    }
+
+    var nxObj = {curImg: 0};
+
+      let kk = gsap.matchMedia(),
+      breakPoint2 = 1000;
+
+      kk.add({
+        isDesktop: `(min-width: ${breakPoint}px) and (prefers-reduced-motion: no-preference)`,
+        isMobile: `(max-width: ${breakPoint - 1}px) and (prefers-reduced-motion: no-preference)`
+      }, (context) => {
+        let { isDesktop, isMobile } = context.conditions,
+            tl2 = gsap.timeline({
+              scrollTrigger: {
+                trigger: ".k",
+                scrub: 1,
+                end: "180%",
+                pin: true
+              }
+            });
+        tl2.to(nxObj, 10,
+        {
+          curImg: nxImages.length - 1,
+          roundProps: "curImg",
+          immediateRender: true,
+          ease: Linear.easeNone,
+          onUpdate: function () {
+            $("#k1-img").attr("src", nxImages[nxObj.curImg]);
+          }
+        },
+		  )
+
+        return () => {
+        }
+      });
+  </script>
+
+  <!-- <script src="video.js"></script>
+  <script>
+      var v = new VideoTweenMax({
+        canvasDiv: document.getElementById('canvas'),
+        videoEle: document.getElementById('video'),
+        defPicUrl: '',
+        fps: 30,
+        frameCount: 900,
+        duration: 30,
+        reverse: 0
+      })
+
+      let kkk = gsap.matchMedia(),
+      breakPoint3 = 1000;
+
+      kkk.add({
+        isDesktop: `(min-width: ${breakPoint}px) and (prefers-reduced-motion: no-preference)`,
+        isMobile: `(max-width: ${breakPoint - 1}px) and (prefers-reduced-motion: no-preference)`
+      }, (context) => {
+        let { isDesktop, isMobile } = context.conditions,
+            tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: ".k2",
+                scrub: 1,
+                end: "180%",
+                pin: true
+              }
+            });
+        tl.to(v.target, v.duration, v.vars)
+
+        return () => {
+        }
+      });
+  </script> -->
+</html>
